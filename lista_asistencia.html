@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Asistencia - CONALEP Cancún II</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5f5f5;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .info span {
+      font-size: 16px;
+      margin: 5px 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 14px;
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 5px;
+    }
+
+    th {
+      background-color: #6e6b6b;
+    }
+
+    input {
+      width: 100%;
+      border: none;
+      text-align: center;
+      background: transparent;
+      outline: none;
+    }
+
+    .btn-guardar {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-guardar:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <h1>LISTA DE ASISTENCIA</h1>
+
+  <div class="info">
+    <span><strong>Materia:</strong> INFORMATICA </span>
+    <span><strong>Grupo:</strong> 504</span>
+    <span><strong>Docente:</strong> LUIS FERNANDO CEME COUHO</span>
+    <span><strong>Periodo:</strong> Noviembre 2025</span>
+  </div>
+
+  <table id="tablaAsistencia">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Matrícula</th>
+        <th>Alumno</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button class="btn-guardar" onclick="guardarCSV()">Guardar lista en CSV</button>
+
+  <script>
+    const fechas = [
+      "3 Nov", "4 Nov", "5 Nov", "6 Nov", "7 Nov",
+      "10 Nov", "11 Nov", "12 Nov", "13 Nov", "14 Nov",
+      "17 Nov", "18 Nov", "19 Nov", "20 Nov", "21 Nov",
+      "24 Nov", "25 Nov", "26 Nov", "27 Nov", "28 Nov"
+    ];
+
+    const tabla = document.getElementById("tablaAsistencia");
+
+    // Crear encabezados de fechas
+    fechas.forEach(f => {
+      const th = document.createElement("th");
+      th.textContent = f;
+      tabla.querySelector("thead tr").appendChild(th);
+    });
+
+    // Crear filas vacías (ejemplo: 10 alumnos)
+    const tbody = tabla.querySelector("tbody");
+    for (let i = 1; i <= 10; i++) {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${i}</td>
+        <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
+      `;
+      fechas.forEach(() => {
+        const celda = document.createElement("td");
+        celda.contentEditable = "true";
+        celda.addEventListener("input", colorearCelda);
+        fila.appendChild(celda);
+      });
+      tbody.appendChild(fila);
+    }
+
+    // Colorear automáticamente según valor (A/F)
+    function colorearCelda(e) {
+      const valor = e.target.textContent.trim().toUpperCase();
+      if (valor === "A") e.target.style.backgroundColor = "lightgreen";
+      else if (valor === "F") e.target.style.backgroundColor = "lightcoral";
+      else e.target.style.backgroundColor = "white";
+    }
+
+    // Guardar como CSV
+    function guardarCSV() {
+      let csv = "";
+      const filas = tabla.querySelectorAll("tr");
+
+      filas.forEach((fila, i) => {
+        const celdas = fila.querySelectorAll("th, td");
+        const valores = [];
+        celdas.forEach(celda => {
+          valores.push(celda.innerText.replace(/,/g, ""));
+        });
+        csv += valores.join(",") + "\n";
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "lista_asistencia.csv";
+      link.click();
+    }
+  </script>
+</body>
+</html>

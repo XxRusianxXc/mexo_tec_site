@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Registro de Alumnos</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f8f8f8;
+}
+table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  width: 90%;
+  max-width: 800px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+td, th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+th {
+  background: #3333aa;
+  color: #fff;
+}
+form {
+  text-align: center;
+  margin-top: 20px;
+}
+h1 {
+  text-align: center;
+  color: #3333AA;
+}
+#resultado {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 20px;
+}
+#tabla-alumnos {
+  margin-top: 40px;
+}
+</style>
+</head>
+
+<body>
+<h1>Formulario de registro de ALUMNOS</h1>
+
+<form id="formulario" enctype="multipart/form-data">
+  <input type="text" name="nombre" placeholder="Nombre_alumno" required />
+  <input type="text" name="apellido_paterno" placeholder="Apellido paterno" required />
+  <input type="text" name="apellido_materno" placeholder="Apellido materno" required />
+  <input type="number" name="pin" placeholder="Pin" required />
+  <input type="submit" value="Registrar alumno" />
+</form>
+
+<div id="resultado"></div>
+
+<div id="tabla-registro"></div>
+
+<script>
+// 🟢 Enviar formulario con AJAX
+document.getElementById('formulario').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  let datos = new FormData(this);
+
+  fetch('guardadatos_alumno.php', {
+    method: 'POST',
+    body: datos
+  })
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById('resultado').innerHTML = data;
+    this.reset();
+    cargarTabla(); // 🔁 Actualiza automáticamente la tabla después de guardar
+  })
+  .catch(err => {
+    document.getElementById('resultado').innerHTML = '❌ Error al enviar datos.';
+  });
+});
+
+// 🟢 Función para cargar tabla automáticamente
+function cargarTabla() {
+  fetch('mostrar_alumnos.php')
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById('tabla_registro').innerHTML = data;
+  });
+}
+
+// Carga inicial
+cargarTabla();
+
+// Actualiza cada 5 segundos automáticamente
+setInterval(cargarTabla, 5000);
+</script>
+
+</body>
+</html>
